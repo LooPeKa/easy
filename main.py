@@ -199,28 +199,29 @@ async def game2(message: Message, mess: Optional[str] = None):
     if str(message.from_id) in data['gameInfo']:
         if data['gameInfo'][str(message.from_id)] == '1':
             if mess.isdigit():
-                if not int(mess) > int(data['balance'][str(message.from_id)]):
-                    keyboard = (
-                        Keyboard()
-                            .add(Text('Орел'), color=KeyboardButtonColor.PRIMARY)
-                            .add(Text('Решка'), color=KeyboardButtonColor.PRIMARY)
-                            .row()
-                            .add(Text('Назад'), color=KeyboardButtonColor.NEGATIVE)
-                            .get_json()
-                    )
-                    data = json.load(open('data.json', 'r'))
-                    data['stavka'][message.from_id] = str(mess)
-                    data['gameInfo'][message.from_id] = '2'
-                    await message.answer('🙂 Орел или решка? Вот в чем вопрос...', keyboard=keyboard)
-                    json.dump(data, open('data.json', 'w'))
+                if int(mess) == 0:
+                    await message.answer('😁 Ого, когда слыхано, что 0 можно прибавить к балансу? Прошу напишите число больше 0!')
                 else:
-                    data = json.load(open('data.json', 'r'))
-                    await message.answer(
-                        '🙄 Ваш баланс ' + str(data['balance'][str(message.from_id)]) + ', но его можно пополнить',
-                        keyboard=main)
-                    data['gameInfo'][message.from_id] = '0'
-                    data['stavka'][message.from_id] = '0'
-                    json.dump(data, open('data.json', 'w'))
+                    if not int(mess) > int(data['balance'][str(message.from_id)]):
+                        keyboard = (
+                            Keyboard()
+                                .add(Text('Орел'), color=KeyboardButtonColor.PRIMARY)
+                                .add(Text('Решка'), color=KeyboardButtonColor.PRIMARY)
+                                .row()
+                                .add(Text('Назад'), color=KeyboardButtonColor.NEGATIVE)
+                                .get_json()
+                        )
+                        data = json.load(open('data.json', 'r'))
+                        data['stavka'][message.from_id] = str(mess)
+                        data['gameInfo'][message.from_id] = '2'
+                        await message.answer('🙂 Орел или решка? Вот в чем вопрос...', keyboard=keyboard)
+                        json.dump(data, open('data.json', 'w'))
+                    else:
+                        data = json.load(open('data.json', 'r'))
+                        await message.answer('🙄 Ваш баланс ' + str(data['balance'][str(message.from_id)]) + ', но его можно пополнить', keyboard=main)
+                        data['gameInfo'][message.from_id] = '0'
+                        data['stavka'][message.from_id] = '0'
+                        json.dump(data, open('data.json', 'w'))
 
             else:
                 await message.answer('😅 Это не число, введите пожалуйста число')
