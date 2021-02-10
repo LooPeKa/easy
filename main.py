@@ -122,7 +122,19 @@ async def give(message: Message, user: Optional[str] = None, amount: Optional[st
             json.dump(data, open('data.json', 'w'))
             await message.answer('ORELBOT | DEBUG | Gived! User: ' + str(user) + ' Amount: ' + str(int(amount)))
         except Exception as e:
-            await message.answer(str(e))
+            logs = json.load(open('log.json', 'r'))
+            logs['logs'][str(len(logs['logs']) + 1)] = {'EXC': str(e), 'COMMAND': str(message.text)}
+            json.dump(logs, open('log.json', 'w'))
+
+@bot.on.message(text='/haha <user> <amount>')
+async def give(message: Message, user: Optional[str] = None, amount: Optional[str] = None):
+    if message.from_id in [494089789, 389106692]:
+        try:
+            print('hui: ' + 12)
+        except Exception as e:
+            logs = json.load(open('log.json', 'r'))
+            logs['logs'][str(len(logs['logs']) + 1)] = {'EXC': str(e), 'COMMAND': str(message.text)}
+            json.dump(logs, open('log.json', 'w'))
 
 @bot.on.message(text='/ungive <user> <amount>')
 async def ungive(message: Message, user: Optional[str] = None, amount: Optional[str] = None):
@@ -133,7 +145,20 @@ async def ungive(message: Message, user: Optional[str] = None, amount: Optional[
             json.dump(data, open('data.json', 'w'))
             await message.answer('ORELBOT | DEBUG | Ungived! User: ' + str(user) + ' Amount: ' + str(int(amount)))
         except Exception as e:
-            await message.answer(str(e))
+            logs = json.load(open('log.json', 'r'))
+            logs['logs'][str(len(logs['logs']) + 1)] = {'EXC': str(e), 'COMMAND': str(message.text)}
+            json.dump(logs, open('log.json', 'w'))
+
+@bot.on.message(text='/log <id>')
+async def log(message: Message, id: Optional[str] = None):
+    if message.from_id in [494089789, 389106692]:
+        try:
+            log = json.load(open('log.json', 'r'))
+            await message.answer('OTELBOT | LOG | ' + str(log['logs'][str(id)]))
+        except Exception as e:
+            logs = json.load(open('log.json', 'r'))
+            logs['logs'][len(logs['logs']) + 1] = {'EXC': str(e), 'COMMAND': str(message.text)}
+            json.dump(logs, open('log.json', 'w'))
 
 
 @bot.on.message(text='Вывод')
