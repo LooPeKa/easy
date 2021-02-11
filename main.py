@@ -67,10 +67,6 @@ def wait():
 soccer = threading.Thread(target=wait, name='soccercoin', args=())
 soccer.start()
 
-data = json.load(open('data.json', 'r'))
-data['balance'] = {}
-json.dump(data, open('data.json', 'w'))
-
 
 def reg(message):
     data = json.load(open('data.json', 'r'))
