@@ -16,12 +16,6 @@ api = soccercoinsdk.Api(token='54581e2790fe2076edbd0efbb890d953', user_id=494089
 gameInfo = {}
 stavka = {}
 refMoney = '25000'
-data = json.load(open('data.json', 'r'))
-ref = json.load(open('ref.json', 'r'))
-for i in data['balance']:
-    ref[i] = []
-
-json.dump(ref, open('ref.json', 'w'))
 
 
 
