@@ -100,6 +100,8 @@ main = (Keyboard()
         .row()
         .add(OpenLink(link=api.getUrl(amount=1000, is_locked=0), label='Пополнить'), color=KeyboardButtonColor.PRIMARY)
         .add(Text("Вывод"), color=KeyboardButtonColor.PRIMARY)
+        .row()
+        .add(Text('Реф'), color=KeyboardButtonColor.PRIMARY)
         .get_json()
         )
 
@@ -111,6 +113,12 @@ async def hello(message: Message):
 
 🐦 Орёл Решка - Классическая игра. Пишешь сумму ставки, выбираешь сторону (орёл или решка) бот с помощью рандома определяет сторону, в случае победы твоя ставка умножается на 2.""",
                          keyboard=main)
+
+@bot.on.message(text='Реф')
+async def bal(message: Message):
+    reg(message)
+    ref = json.load(open('ref.json', 'r'))
+    await message.answer('😎 Ваша ссылка: https://vk.com/soccercoin_bot?ref=' + str(message.from_id) + '\nВы пригласили: ' + str(ref[str(message.from_id)]))
 
 
 @bot.on.message(text='Баланс')
