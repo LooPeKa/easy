@@ -118,7 +118,7 @@ async def hello(message: Message):
 async def bal(message: Message):
     reg(message)
     ref = json.load(open('ref.json', 'r'))
-    await message.answer('😎 Ваша ссылка: https://vk.com/soccercoin_bot?ref=' + str(message.from_id) + '\nВы пригласили: ' + str(len(ref[str(message.from_id)])))
+    await message.answer('😎 Ваша ссылка: https://vk.me/soccercoin_bot?ref=' + str(message.from_id) + '\nВы пригласили: ' + str(len(ref[str(message.from_id)])))
 
 
 @bot.on.message(text='Баланс')
