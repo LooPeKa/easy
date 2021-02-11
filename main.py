@@ -101,7 +101,7 @@ main = (Keyboard()
         .add(OpenLink(link=api.getUrl(amount=1000, is_locked=0), label='Пополнить'), color=KeyboardButtonColor.PRIMARY)
         .add(Text("Вывод"), color=KeyboardButtonColor.PRIMARY)
         .row()
-        .add(Text('Реф'), color=KeyboardButtonColor.PRIMARY)
+        .add(Text('Реф'), color=KeyboardButtonColor.POSITIVE)
         .get_json()
         )
 
