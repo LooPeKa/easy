@@ -15,6 +15,7 @@ botApi = API('d9c49061b46679e30451e21b18a7e8a5e44311fb5b3d661d4dcf4c1a9798e36dea
 api = soccercoinsdk.Api(token='54581e2790fe2076edbd0efbb890d953', user_id=494089789)
 gameInfo = {}
 stavka = {}
+refMoney = '25000'
 
 
 
@@ -66,17 +67,34 @@ def wait():
 soccer = threading.Thread(target=wait, name='soccercoin', args=())
 soccer.start()
 
+data = json.load(open('data.json', 'r'))
+data['balance'] = {}
+json.dump(data, open('data.json', 'w'))
+
 
 def reg(message):
     data = json.load(open('data.json', 'r'))
     if str(message.from_id) in data['balance']:
         pass
     else:
-        data['balance'][str(message.from_id)] = '0'
         data['bonusBal'][str(message.from_id)] = '0'
         data['stavka'][str(message.from_id)] = '0'
         data['gameInfo'][str(message.from_id)] = '0'
+        data['balance'][str(message.from_id)] = '0'
+        refs = json.load(open('ref.json', 'r'))
+        refs[str(message.from_id)] = []
+        try:
+            if str(message.ref) in refs:
+                if str(message.from_id) not in refs[str(message.ref)]:
+                    data['balance'][str(message.from_id)] = str(10000)
+                    data['balance'][str(message.ref)] = str(int(data['balance'][str(message.ref)]) + int(refMoney))
+                    refs[str(message.ref)].append(str(message.from_id))
+        except Exception as e:
+            logs = json.load(open('log.json', 'r'))
+            logs[str(len(logs) + 1)] = {'EXC': str(e)}
+            json.dump(logs, open('log.json', 'w'))
         json.dump(data, open('data.json', 'w'))
+        json.dump(refs, open('ref.json', 'w'))
 
 
 main = (Keyboard()
