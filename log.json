@@ -1,1 +1,0 @@
-{"logs": {"1": {"EXC": "can only concatenate str (not \"int\") to str", "COMMAND": "/haha 6 6"}, "2": {"EXC": "'2'", "COMMAND": "/log 2"}}}
