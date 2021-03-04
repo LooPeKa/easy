@@ -1,7 +1,6 @@
 import asyncio
 import random
-
-import soccercoinsdk
+from paperscrollsdk import PaperScroll
 from vkbottle.bot import Bot, Message
 from vkbottle import Keyboard, Text, KeyboardButtonColor, OpenLink
 from typing import Optional
@@ -12,17 +11,22 @@ from vkbottle.api import API
 
 bot = Bot('d9c49061b46679e30451e21b18a7e8a5e44311fb5b3d661d4dcf4c1a9798e36dea3332c0ad6daba2acb18')
 botApi = API('d9c49061b46679e30451e21b18a7e8a5e44311fb5b3d661d4dcf4c1a9798e36dea3332c0ad6daba2acb18')
-api = soccercoinsdk.Api(token='54581e2790fe2076edbd0efbb890d953', user_id=494089789)
+paperClient = PaperScroll(62, "kgHnZzGwuvS3uQ2XQSNqThdpXdUvdYsonJAhNoTWmzovZzB4wc8xvrkzPu7Zoh1t")
+api = paperClient.getApi()
+print(api.getHistoryTransfers())
 gameInfo = {}
 stavka = {}
 refMoney = '25000'
+api.editMerchant(newMerchantObject={"name": "Орёл и Решка",
+                                    "group_id": 199265202,
+                                    "avatar": "https://sun9-19.userapi.com/impf/B_USqPtQ3x0upSypJwOfixXE68pSzQlPiE93DQ/AiY6vViulfE.jpg?size=540x540&quality=96&sign=1b2c11f266e1a173d8ef7f4de8e970c3&type=album"})
 
 
 
 async def soccercoin():
-    lastTransaction = api.getHistory()['response'][0]
+    lastTransaction = api.getHistoryTransfers()[0]
     while True:
-        transaction = api.getHistory()['response'][0]
+        transaction = api.getHistoryTransfers()[0]
         if transaction != lastTransaction:
             if not transaction['is_initiator']:
                 try:
@@ -30,14 +34,14 @@ async def soccercoin():
                     if '.' in str(transaction['amount']):
                         data['balance'][str(transaction['peer_id'])] = str(
                             int(data['balance'][str(transaction['peer_id'])]) + int(
-                                str(transaction['amount'])[0:str(transaction['amount']).find('.')]
+                                str(transaction['amount'])[0:len(str(transaction['amount']))-3]
 
                             )
                         )
                     else:
                         data['balance'][str(transaction['peer_id'])] = str(
                             int(data['balance'][str(transaction['peer_id'])]) + int(
-                                str(transaction['amount'])
+                                str(transaction['amount'])[0:len(str(transaction['amount']))-3]
 
                             )
                         )
@@ -51,7 +55,7 @@ async def soccercoin():
                         mess = (await botApi.messages.send(user_id=transaction['peer_id'],
                                                            random_id=0,
                                                            message='🌟 Ваш баланс пополнен на ' + str(
-                                                               transaction['amount']) + ' SoccerCoin'))
+                                                               transaction['amount']/1000) + ' SoccerCoin'))
                     except Exception:
                         pass
                 except Exception:
@@ -98,7 +102,7 @@ main = (Keyboard()
         .row()
         .add(Text("Баланс"), color=KeyboardButtonColor.PRIMARY)
         .row()
-        .add(OpenLink(link=api.getUrl(amount=1000, is_locked=0), label='Пополнить'), color=KeyboardButtonColor.PRIMARY)
+        .add(OpenLink(link="https://vk.com/app7420483#m62_1000_2323232_0", label='Пополнить'), color=KeyboardButtonColor.PRIMARY)
         .add(Text("Вывод"), color=KeyboardButtonColor.PRIMARY)
         .row()
         .add(Text('Реф'), color=KeyboardButtonColor.POSITIVE)
@@ -109,7 +113,7 @@ main = (Keyboard()
 @bot.on.message(text='Начать')
 async def hello(message: Message):
     reg(message)
-    await message.answer("""🐥 Привет, это игровой бот на валюту [https://vk.com/app7727936|SoccerCoin]
+    await message.answer("""🐥 Привет, это игровой бот на валюту [https://vk.com/paper_scroll|PaperScroll]
 
 🐦 Орёл Решка - Классическая игра. Пишешь сумму ставки, выбираешь сторону (орёл или решка) бот с помощью рандома определяет сторону, в случае победы твоя ставка умножается на 2.""",
                          keyboard=main)
@@ -131,7 +135,7 @@ async def bal(message: Message):
 @bot.on.message(text='/send <user> <amount>')
 async def out(message: Message, user: Optional[str] = None, amount: Optional[str] = None):
     if message.from_id in [494089789, 389106692]:
-        api.sendPayment(to_id=int(user), amount=int(amount))
+        api.createTransfer(transferObject={"amount":int(amount), "peer_id": message.from_id, "message": 'Вывод с проекта "Орëл и Решка", можете оставить отзыв...', 'object_type': 'balance', 'object_type_id': 0})
         print('ORELBOT | DEBUG | Send! User: ' + str(user) + ' Amount: ' + str(amount))
         await message.answer("Переведено! Сумма: " + str(int(amount) / 1000))
 
@@ -186,7 +190,7 @@ async def log(message: Message, id: Optional[str] = None):
 @bot.on.message(text='Вывод')
 async def out(message: Message):
     reg(message)
-    balanceBot = str(api.getScore()['response']['coins'])
+    balanceBot = str(api.getMerchants()[0]['balance']/1000)
     balanceBot = balanceBot[0:balanceBot.index('.')]
     balanceUser = json.load(open('data.json', 'r'))
     balanceUser = str(balanceUser['balance'][str(message.from_id)])
@@ -195,8 +199,7 @@ async def out(message: Message):
         await  message.answer("💣 Ваш баланс 0, выводить нечего 😅")
     else:
         if int(balanceBot) >= int(balanceUser):
-            print('ORELBOT | DEBUG | API SoccerCoin: ' + str(
-                api.sendPayment(to_id=message.from_id, amount=int(balanceUser) * 1000)))
+            print('ORELBOT | DEBUG | API SoccerCoin: ' + str(api.createTransfer(transferObject={"amount":int(balanceUser)*1000, "peer_id": message.from_id, "message": 'Вывод с проекта "Орëл и Решка", можете оставить отзыв...', 'object_type': 'balance', 'object_type_id': 0})))
             await message.answer('💵 Вы успешно вывели ' + balanceUser + ' SoccerCoin')
             data = json.load(open('data.json', 'r'))
             data['balance'][str(message.from_id)] = '0'
